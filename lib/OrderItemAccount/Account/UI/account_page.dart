@@ -27,8 +27,8 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
 );
 
 Future<void> myBackgroundMessageHandler(RemoteMessage message) async {
-  _showNotification(flutterLocalNotificationsPlugin,
-      '${message.notification.title}', '${message.notification.body}');
+ /* _showNotification(flutterLocalNotificationsPlugin,
+      '${message.notification.title}', '${message.notification.body}');*/
 }
 
 class AccountPage extends StatelessWidget {
@@ -122,8 +122,8 @@ class _AccountState extends State<Account> {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
-      _showNotification(flutterLocalNotificationsPlugin,
-          '${message.notification.title}', '${message.notification.body}');
+     /* _showNotification(flutterLocalNotificationsPlugin,
+          '${message.notification.title}', '${message.notification.body}');*/
     });
     FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
   }
@@ -144,7 +144,7 @@ class _AccountState extends State<Account> {
   Future onDidReceiveLocalNotification(
       int id, String title, String body, String payload) async {
     // var message = jsonDecode('${payload}');
-    _showNotification(flutterLocalNotificationsPlugin, '${title}', '${body}');
+    //_showNotification(flutterLocalNotificationsPlugin, '${title}', '${body}');
   }
 
   Future selectNotification(String payload) async {}

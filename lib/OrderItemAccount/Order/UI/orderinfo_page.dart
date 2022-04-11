@@ -49,7 +49,9 @@ bool isDismiss = false;
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(200.0),
+        preferredSize: Size.fromHeight((orderDetails.order_status.toString().trim().toUpperCase() == 'PENDING')
+            ? 200
+            : 150),
         child: CustomAppBar(
           leading: IconButton(
             icon: Icon(
@@ -101,7 +103,14 @@ bool isDismiss = false;
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(0.0),
             child: Column(
-              children: [ Row(
+              children: [
+            Visibility(
+            visible: ((orderDetails.order_status.toString().trim().toUpperCase() == 'PENDING') ||
+                (orderDetails.order_status.toString().trim().toUpperCase() == 'CANCEL'))
+              ? true
+              : false,
+            child:
+                Row(
             mainAxisAlignment:
             MainAxisAlignment.spaceAround,
             children: [
@@ -149,6 +158,7 @@ bool isDismiss = false;
                 ),
               ),
             ]),
+            ),
             Hero(
               tag: locale.customer,
               child: Container(
@@ -182,15 +192,15 @@ bool isDismiss = false;
                         IconButton(
                           icon: Icon(
                             Icons.phone,
-                            color: kMainColor,
-                            size: 18.0,
+                            color: kWhiteColor,
+                            size: 0.0,
                           ),
                           onPressed: () {
-                            if (orderDetails.user_number != null &&
+                           /* if (orderDetails.user_number != null &&
                                 orderDetails.user_number.toString().length >
                                     9) {
                               _launchURL("tel:${orderDetails.user_number}");
-                            }
+                            }*/
                           },
                         ),
                       ],
@@ -727,6 +737,9 @@ bool isDismiss = false;
         Toast.show(jsonData['message'], context,
             duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
         if (jsonData['status'] == "1") {
+          Navigator.of(context).pop();
+        }
+        if (type=='Cancelled') {
           Navigator.of(context).pop();
         }
       }else{

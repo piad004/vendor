@@ -106,7 +106,7 @@ class EditState extends State<Edit> {
 
   @override
   void initState() {
-    getCategoryList();
+   // getCategoryList();
     super.initState();
   }
 
@@ -243,7 +243,7 @@ class EditState extends State<Edit> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        _showPicker(context,locale);
+                       // _showPicker(context,locale);
                       },
                       behavior: HitTestBehavior.opaque,
                       child: Row(
@@ -261,14 +261,14 @@ class EditState extends State<Edit> {
                           Icon(
                             Icons.camera_alt,
                             color: kMainColor,
-                            size: 19.0,
+                            size: 0.0,
                           ),
                           SizedBox(width: 14.3),
-                          Text(locale.uploadpic,
+                         /* Text(locale.uploadpic,
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  .copyWith(color: kMainColor)),
+                                  .copyWith(color: kMainColor)),*/
                         ],
                       ),
                     ),
@@ -301,6 +301,7 @@ class EditState extends State<Edit> {
                       label: locale.itemtitle1,
                       hint: locale.itemtitle2,
                       controller: productNameC,
+                      readOnly: true,
                       // initialValue: '${productBean.product_name}',
                     ),
                     SizedBox(
@@ -329,12 +330,12 @@ class EditState extends State<Edit> {
                                 child: Text(values.category_name),
                               );
                             }).toList(),
-                            onChanged: (area) {
+                            onChanged: null/*(area) {
                               setState(() {
                                 catString = area;
                               });
                               getSubCategoryList(area.category_id);
-                            },
+                            }*/,
                           )
                         ],
                       ),
@@ -365,11 +366,11 @@ class EditState extends State<Edit> {
                                 child: Text(values.subcat_name),
                               );
                             }).toList(),
-                            onChanged: (area) {
+                            onChanged: null/*(area) {
                               setState(() {
                                 subCatString = area;
                               });
-                            },
+                            }*/,
                           )
                         ],
                       ),

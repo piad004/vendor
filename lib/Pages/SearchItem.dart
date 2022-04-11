@@ -222,7 +222,7 @@ class AddState extends State<Add> {
                         cursorColor: kMainColor,
                         autofocus: false,
                         onChanged: (value) {
-                          hitSearchItem(value);
+                          hitSearchItem(value,pr);
                         },
                       ),
                     ),
@@ -404,6 +404,10 @@ class AddState extends State<Add> {
 
 
   showItemList(BuildContext context, String messageData) {
+
+    final ProgressDialog pr = ProgressDialog(context,
+        type: ProgressDialogType.Normal, isDismissible: false, showLogs: true);
+
     // set up the buttons
     Widget remindButton = FlatButton(
       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
@@ -449,7 +453,7 @@ class AddState extends State<Add> {
                   cursorColor: kMainColor,
                   autofocus: false,
                   onChanged: (value) {
-                    hitSearchItem(value);
+                    hitSearchItem(value,pr);
                   },
                 ),
               ),
@@ -650,7 +654,8 @@ class AddState extends State<Add> {
             color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
   }
 
-  void hitSearchItem(var searchValue) async {
+  void hitSearchItem(var searchValue,ProgressDialog pr) async {
+    //pr.show();
     SharedPreferences profilePref = await SharedPreferences.getInstance();
     var storeId = profilePref.getInt("vendor_id");
 
@@ -675,12 +680,12 @@ class AddState extends State<Add> {
           });
         }
       } else {
-
-
       }
 
-    }).catchError((e) {
+      pr.hide();
 
+    }).catchError((e) {
+      pr.hide();
     });
   }
 

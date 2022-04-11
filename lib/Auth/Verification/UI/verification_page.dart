@@ -469,8 +469,6 @@ class _OtpVerifyState extends State<OtpVerify> {
             var phone_verified = int.parse('${profile.phone_verified}');
             prefs.setInt("phoneverifed", phone_verified);
             prefs.setBool("islogin", true);
-            Toast.show(jsonData['message'], context,
-                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
             hitNavitgator(context);
           } else {
             prefs.setInt("phoneverifed", 0);
@@ -479,7 +477,12 @@ class _OtpVerifyState extends State<OtpVerify> {
               showDialogBox = false;
             });
           }
-        }
+
+          Toast.show(jsonData['message'], context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+        }else
+          Toast.show('Server error!', context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       });
     } else {
       firebaseMessaging.getToken().then((value) {
@@ -551,8 +554,6 @@ class _OtpVerifyState extends State<OtpVerify> {
             var phone_verified = int.parse('${profile.phone_verified}');
             prefs.setInt("phoneverifed", phone_verified);
             prefs.setBool("islogin", true);
-            Toast.show(jsonData['message'], context,
-                duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
             hitNavitgator(context);
           } else {
             prefs.setInt("phoneverifed", 0);
@@ -561,16 +562,25 @@ class _OtpVerifyState extends State<OtpVerify> {
               showDialogBox = false;
             });
           }
+
+          Toast.show(jsonData['message'], context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
         } else {
           setState(() {
             showDialogBox = false;
           });
+
+          Toast.show('Server error!', context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
         }
       }).catchError((e) {
         print(e);
         setState(() {
           showDialogBox = false;
         });
+
+        Toast.show('Something went wrong!', context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
       });
     } else {
       firebaseMessaging.getToken().then((value) {

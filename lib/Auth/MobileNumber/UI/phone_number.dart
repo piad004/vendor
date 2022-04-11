@@ -149,7 +149,7 @@ class PhoneNumberState extends State<PhoneNumber> {
                       Container(
                         width: widthRender,
                         child: Image.asset(
-                          "images/logo_user.png",
+                          "images/logo_user1.png",
                           height: 130.0,
                           width: 99.7,
                         ),

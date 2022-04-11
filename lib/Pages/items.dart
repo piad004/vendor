@@ -21,7 +21,7 @@ class ItemsPage extends StatefulWidget {
 }
 
 class _ItemsPageState extends State<ItemsPage>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   List<DropdownMenuItem<VarientList>> listDrop = [];
   List<ProductBean> productList = [];
   int selected = null;
@@ -45,6 +45,7 @@ class _ItemsPageState extends State<ItemsPage>
   void getSubCategory() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
+      isFetch = true;
       curency = pref.getString('curency');
     });
     var vendorId = pref.getInt('vendor_id');
@@ -81,7 +82,17 @@ class _ItemsPageState extends State<ItemsPage>
           }
         }
       }
-    }).catchError((e) => print(e));
+      setState(() {
+        isFetch = false;
+      });
+    }).catchError((e) => {
+              if (subCatList != null && subCatList.length > 0)
+                productListM(subCatList[tabController.index].subcat_id),
+              print(e),
+              setState(() {
+                isFetch = false;
+              })
+            });
   }
 
   void productListM(catid) async {
@@ -145,7 +156,10 @@ class _ItemsPageState extends State<ItemsPage>
                     color: kMainColor,
                   ),
                   onPressed: () {
+                    /* if(subCatList!=null && tabController!=null)
                     productListM(subCatList[tabController.index].subcat_id);
+                    else*/
+                    getSubCategory();
                   }),
             ],
             bottom: TabBar(
@@ -563,7 +577,10 @@ class _ItemsPageState extends State<ItemsPage>
         floatingActionButton: FloatingActionButton(
           onPressed: () =>
               Navigator.pushNamed(context, PageRoutes.addItem).then((value) {
-            productListM(subCatList[tabController.index].subcat_id);
+            /* if(subCatList!=null && tabController!=null)
+                  productListM(subCatList[tabController.index].subcat_id);
+                else*/
+            getSubCategory();
           }),
           tooltip: 'ADD PRODUCT',
           child: Icon(
@@ -591,6 +608,7 @@ class _ItemsPageState extends State<ItemsPage>
     }
     final url = Uri.encodeFull('$storeProduct/${product_id}');
     client.delete(Uri.parse(url)).then((value) {
+      var jsonData1 = jsonDecode(value.body);
       print('${value.body}');
       if (value.statusCode == 200) {
         var jsonData = jsonDecode(value.body);
@@ -602,6 +620,9 @@ class _ItemsPageState extends State<ItemsPage>
           Toast.show(locale.somethingwent, context,
               gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
         }
+      } else {
+        Toast.show(locale.somethingwent, context,
+            gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
       }
       setState(() {
         isDelete = false;
@@ -623,8 +644,8 @@ class _ItemsPageState extends State<ItemsPage>
     var client = http.Client();
     var url = store_stockchange;
     client.post(url, body: {
-      'varient_id':varient_id.toString(),
-      'type':stockType
+      'varient_id': varient_id.toString(),
+      'type': stockType
     }).then((value) {
       print('${value.body}');
       if (value.statusCode == 200) {
@@ -632,9 +653,7 @@ class _ItemsPageState extends State<ItemsPage>
         if (jsonData['status'] == "1") {
           Toast.show(jsonData['message'], context,
               gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
-          productListM(
-              subCatList[tabController.index]
-                  .subcat_id);
+          productListM(subCatList[tabController.index].subcat_id);
         } else {
           Toast.show(jsonData['message'], context,
               gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);

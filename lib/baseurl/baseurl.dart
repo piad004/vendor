@@ -90,7 +90,7 @@ var firebase = Uri.parse('${baseUrl}firebase');
 var verifyotpfirebase = Uri.parse('${baseUrl}verifyotpfirebase_vendor');
 var resendOtpVendor = Uri.parse('${baseUrl}resend_otp_vendor');
 
-var appname = 'Vendor';
+var appname = 'Delvfast';
 
 dynamic APP_STORE_URL =
     'https://phobos.apple.com/WebObjects/MZStore.woa/wa/viewSoftwareUpdate?id=com.gomarketdemo.vendor&mt=8';
