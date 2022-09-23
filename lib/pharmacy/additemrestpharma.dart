@@ -12,6 +12,8 @@ import 'package:toast/toast.dart';
 import 'package:vendor/Components/bottom_bar.dart';
 import 'package:vendor/Components/entry_field.dart';
 import 'package:vendor/Locale/locales.dart';
+import 'package:vendor/Pages/SearchItemModel.dart';
+import 'package:vendor/Routes/routes.dart';
 import 'package:vendor/Themes/colors.dart';
 import 'package:vendor/baseurl/baseurl.dart';
 import 'package:vendor/orderbean/productbean.dart';
@@ -54,6 +56,9 @@ class AddPharmaState extends State<AddPharma> {
   TextEditingController productMrpC = TextEditingController();
   TextEditingController productPriceC = TextEditingController();
   TextEditingController productDespC = TextEditingController();
+  TextEditingController productCat = TextEditingController();
+  TextEditingController productStock = TextEditingController();
+  SearchItemModel product;
 
   AddRestState() {
     subCatString = CategoryRestList('', '', '', '');
@@ -178,7 +183,7 @@ class AddPharmaState extends State<AddPharma> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        _showPicker(context,locale);
+                        //_showPicker(context,locale);
                       },
                       behavior: HitTestBehavior.opaque,
                       child: Row(
@@ -196,14 +201,14 @@ class AddPharmaState extends State<AddPharma> {
                           Icon(
                             Icons.camera_alt,
                             color: kMainColor,
-                            size: 19.0,
+                            size: 0.0,
                           ),
                           SizedBox(width: 14.3),
-                          Text(locale.uploadpic,
+                          /*Text(locale.uploadpic,
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  .copyWith(color: kMainColor)),
+                                  .copyWith(color: kMainColor)),*/
                         ],
                       ),
                     ),
@@ -231,11 +236,27 @@ class AddPharmaState extends State<AddPharma> {
                             color: kHintColor),
                       ),
                     ),
+                   /* EntryField(
+                      textCapitalization: TextCapitalization.words,
+                      label: locale.itemtitle1,
+                      hint: locale.itemtitle2,
+                      controller: productNameC,
+                    ),*/
                     EntryField(
                       textCapitalization: TextCapitalization.words,
                       label: locale.itemtitle1,
                       hint: locale.itemtitle2,
                       controller: productNameC,
+                      readOnly: true,
+                      onTap: () {
+                        Navigator.pushNamed(context, PageRoutes.searchPharmaItem).then((_) {
+                         getProduct();
+                        });
+
+                        /*  Navigator.push(
+                            context, MaterialPageRoute(builder: (context) => SearchItem()));*/
+                        //showItemList(context,"Search item");
+                      },
                     ),
                     SizedBox(
                       height: 5,
@@ -250,7 +271,7 @@ class AddPharmaState extends State<AddPharma> {
                             locale.itemcat,
                             style: TextStyle(fontSize: 13, color: kHintColor),
                           ),
-                          DropdownButton<CategoryRestList>(
+                         /* DropdownButton<CategoryRestList>(
                             isExpanded: true,
                             value: subCatString,
                             underline: Container(
@@ -268,7 +289,14 @@ class AddPharmaState extends State<AddPharma> {
                                 subCatString = area;
                               });
                             },
-                          )
+                          )*/
+                          EntryField(
+                            textCapitalization: TextCapitalization.words,
+                            label: 'Item category',
+                            hint: 'Item category',
+                            controller: productCat,
+                            readOnly: true,
+                          ),
                         ],
                       ),
                     ),
@@ -350,6 +378,12 @@ class AddPharmaState extends State<AddPharma> {
                       controller: productUnitC,
                       hint: locale.itemunit2,
                     ),
+                    EntryField(
+                      textCapitalization: TextCapitalization.words,
+                      label: locale.stock1,
+                      controller: productStock,
+                      hint: locale.stock2,
+                    ),
                   ],
                 ),
               ),
@@ -393,15 +427,65 @@ class AddPharmaState extends State<AddPharma> {
         productPriceC.text.isNotEmpty &&
         productUnitC.text.isNotEmpty &&
         productQuantityC.text.isNotEmpty &&
-        productDespC.text.isNotEmpty) {
+        productDespC.text.isNotEmpty &&
+        productStock.text.isNotEmpty) {
       SharedPreferences profilePref = await SharedPreferences.getInstance();
       var storeId = profilePref.getInt("vendor_id");
       pr.show();
-      String fid = _image.path.split('/').last;
+      //String fid = _image.path.split('/').last;
       var storeEditUrl = pharmacy_addnewproduct;
-      var request = http.MultipartRequest("POST",storeEditUrl);
+      http.post(storeEditUrl, body: {
+        "vendor_id": storeId.toString(),
+        "subcat_id": product.subcatId.toString(),
+        //"cat_id": product.categoryId.toString(),
+        "product_id": product.productId.toString(),
+        "product_name": productNameC.text,
+        "mrp": productMrpC.text,
+        "price": productPriceC.text,
+        "stock": productStock.text,
+        "unit": productUnitC.text,
+        "quantity": productQuantityC.text,
+        "product_description": productDespC.text,
+      }).then((response) {
+        var jsonData = jsonDecode(response.body);
+        if (response.statusCode == 200) {
+          var jsonData = jsonDecode(response.body);
+          if (jsonData['status'] == "1") {
+            Toast.show(jsonData['message'], context,
+                duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
+            productNameC.clear();
+            productDespC.clear();
+            productPriceC.clear();
+            productMrpC.clear();
+            productQuantityC.clear();
+            productUnitC.clear();
+            productCat.clear();
+            productStock.clear();
+            setState(() {
+              _image = null;
+            });
+          } else {
+            Toast.show(jsonData['message'], context,
+                duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
+          }
+          clearProduct();
+        }
+        else{
+          Toast.show(locale.somethingwent, context,
+              duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
+        }
+        pr.hide();
+      }).catchError((e1) {
+        print(e1);
+        Toast.show(locale.somethingwent, context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
+        pr.hide();
+      });
+
+      /*var request = http.MultipartRequest("POST",storeEditUrl);
       request.fields["vendor_id"] = '${storeId}';
       request.fields["subcat_id"] = '${subCatString.resturant_cat_id}';
+      request.fields["product_id"] = '${product.productId}';
       request.fields["product_name"] = '${productNameC.text}';
       request.fields["mrp"] = '${productMrpC.text}';
       request.fields["price"] = '${productPriceC.text}';
@@ -450,11 +534,29 @@ class AddPharmaState extends State<AddPharma> {
         Toast.show(locale.somethingwent, context,
             duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
         pr.hide();
-      });
+      });*/
     } else {
       Toast.show(locale.addprodetail, context,
           duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
       pr.hide();
     }
+  }
+
+  Future<void> getProduct() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    Map json = jsonDecode(pref.getString('product'));
+    setState(() {
+      product = SearchItemModel.fromJson(json);
+      productNameC.text=product.productName;
+      productCat.text=product.categoryName;
+      //productSubCat.text=product.subcatName;
+      _image = File(product.productImage);
+
+    });
+  }
+
+  Future<void> clearProduct() async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setString('product','');
   }
 }

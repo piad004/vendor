@@ -274,9 +274,11 @@ class _ItemsPageRestState extends State<ItemsPageRest>
                                                           .varient_details !=
                                                           null &&
                                                           productList[index]
+                                                              .varient_details.isNotEmpty &&
+                                                          productList[index]
                                                               .varient_details
                                                               .length >
-                                                              0)
+                                                              1)
                                                           ? productList[index]
                                                           .varient_details[
                                                       productList[
@@ -289,9 +291,11 @@ class _ItemsPageRestState extends State<ItemsPageRest>
                                                           .varient_details !=
                                                           null &&
                                                           productList[index]
+                                                              .varient_details.isNotEmpty &&
+                                                          productList[index]
                                                               .varient_details
                                                               .length >
-                                                              0)
+                                                              1)
                                                           ? true
                                                           : false);
                                                 },

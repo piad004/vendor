@@ -35,6 +35,8 @@ class _ItemsPageState extends State<ItemsPage>
 
   dynamic isFetch = false;
   dynamic isDelete = false;
+  bool isSearchOpen = false;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -130,6 +132,43 @@ class _ItemsPageState extends State<ItemsPage>
     });
   }
 
+  void productSearch(catid, keyword) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      isFetch = true;
+      curency = pref.getString('curency');
+      productList.clear();
+    });
+    var vendorId = pref.getInt('vendor_id');
+    var client = http.Client();
+    var storeProduct = store_subcategoryproduct;
+    client.post(storeProduct, body: {
+      'keyword': '${keyword}',
+      'vendor_id': '${vendorId}',
+      'subcat_id': '${catid}'
+    }).then((value) {
+      print('${value.body}');
+      if (value.statusCode == 200) {
+        var jsonData = jsonDecode(value.body) as List;
+        List<ProductBean> listBean =
+        jsonData.map((e) => ProductBean.fromJson(e)).toList();
+        if (listBean.length > 0) {
+          setState(() {
+            productList = List.from(listBean);
+          });
+        }
+      }
+      setState(() {
+        isFetch = false;
+      });
+    }).catchError((e) {
+      setState(() {
+        isFetch = false;
+      });
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     var locale = AppLocalizations.of(context);
@@ -142,6 +181,71 @@ class _ItemsPageState extends State<ItemsPage>
             titleWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Visibility(
+                    visible: isSearchOpen,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 27,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 52,
+                          padding: EdgeInsets.only(left: 5),
+                          decoration: BoxDecoration(
+                            color: scaffoldBgColor,
+                            // borderRadius: BorderRadius.circular(50)
+                          ),
+                          child: TextFormField(
+                            controller: searchController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: kHintColor,
+                              ),
+                              hintText: 'Search product...',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isSearchOpen = false;
+                                    searchController.clear();
+                                  });
+                                  /* Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        //builder: (context) => SearchPage('["shop"]',categoryLists[0].vendor_id)))
+                                          builder: (context) => SearchPage('["all"]',uiType,vendorCategoryId,vendor_id.toString(),'')))
+                                      .then((value) {
+                                    getCartCount();
+                                  });*/
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  color: kHintColor,
+                                ),
+                              ),
+                            ),
+                            cursorColor: kMainColor,
+                            autofocus: false,
+                            onChanged: (value) {
+                              productSearch(
+                                  subCatList[tabController.index]
+                                      .subcat_id,
+                                  value);
+                              setState(() {
+                                /* categoryLists = categoryListsSearch
+                                    .where((element) => element.category_name
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()))
+                                    .toList();*/
+                              });
+                            },
+                          ),
+                        )
+                      ],
+                    )),
                 Center(
                     child: Text(
                   locale.myproduct,
@@ -150,17 +254,40 @@ class _ItemsPageState extends State<ItemsPage>
               ],
             ),
             actions: <Widget>[
-              IconButton(
+              Visibility(
+                  visible: (isSearchOpen) ? false : true,
+                  child: Row(children: [
+                    IconButton(
+                        icon: Icon(
+                          Icons.search,
+                          color: kMainColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isSearchOpen = true;
+                            searchController.clear();
+                          });
+                        }),
+                    IconButton(
+                        icon: Icon(
+                          Icons.refresh,
+                          color: kMainColor,
+                        ),
+                        onPressed: () {
+                          getSubCategory();
+                        }),
+                  ])),
+             /* IconButton(
                   icon: Icon(
                     Icons.refresh,
                     color: kMainColor,
                   ),
                   onPressed: () {
-                    /* if(subCatList!=null && tabController!=null)
+                    *//* if(subCatList!=null && tabController!=null)
                     productListM(subCatList[tabController.index].subcat_id);
-                    else*/
+                    else*//*
                     getSubCategory();
-                  }),
+                  }),*/
             ],
             bottom: TabBar(
               controller: tabController,
@@ -186,7 +313,7 @@ class _ItemsPageState extends State<ItemsPage>
                               itemBuilder: (context, index) {
                                 return GestureDetector(
                                   onTap: () {
-                                    Navigator.pushNamed(
+                                    /*Navigator.pushNamed(
                                         context, PageRoutes.editItem,
                                         arguments: {
                                           'selectedItem': productList[index],
@@ -195,7 +322,7 @@ class _ItemsPageState extends State<ItemsPage>
                                       productListM(
                                           subCatList[tabController.index]
                                               .subcat_id);
-                                    });
+                                    });*/
                                   },
                                   behavior: HitTestBehavior.opaque,
                                   child: Stack(
@@ -209,7 +336,20 @@ class _ItemsPageState extends State<ItemsPage>
                                                 left: 20.0,
                                                 top: 30.0,
                                                 right: 14.0),
-                                            child: (productList != null &&
+                                            child: GestureDetector(
+                                              onTap: (){
+                                                Navigator.pushNamed(
+                                                    context, PageRoutes.editItem,
+                                                    arguments: {
+                                                      'selectedItem': productList[index],
+                                                      'currency': curency
+                                                    }).then((value) {
+                                                  productListM(
+                                                      subCatList[tabController.index]
+                                                          .subcat_id);
+                                                });
+                                              },
+                                              child: (productList != null &&
                                                     productList.length > 0)
                                                 ? Image.network(
                                                     imageBaseUrl +
@@ -225,6 +365,7 @@ class _ItemsPageState extends State<ItemsPage>
                                                     height: 93.3,
                                                     width: 93.3,
                                                   ),
+                                            ),
                                           ),
                                           Expanded(
                                             child: Row(
@@ -322,10 +463,12 @@ class _ItemsPageState extends State<ItemsPage>
                                                             (productList[index]
                                                                             .varient_details !=
                                                                         null &&
+                                                                productList[index]
+                                                                    .varient_details.isNotEmpty &&
                                                                     productList[index]
                                                                             .varient_details
                                                                             .length >
-                                                                        0)
+                                                                        1)
                                                                 ? productList[
                                                                         index]
                                                                     .varient_details[
@@ -338,10 +481,12 @@ class _ItemsPageState extends State<ItemsPage>
                                                             (productList[index]
                                                                             .varient_details !=
                                                                         null &&
+                                                                productList[index]
+                                                                    .varient_details.isNotEmpty &&
                                                                     productList[index]
                                                                             .varient_details
                                                                             .length >
-                                                                        0)
+                                                                        1)
                                                                 ? true
                                                                 : false);
                                                       },
@@ -607,8 +752,10 @@ class _ItemsPageState extends State<ItemsPage>
       storeProduct = store_deleteproduct;
     }
     final url = Uri.encodeFull('$storeProduct/${product_id}');
-    client.delete(Uri.parse(url)).then((value) {
-      var jsonData1 = jsonDecode(value.body);
+    client.post(Uri.parse(storeProduct),body: {
+      'varient_id':product_id.toString()
+    }).then((value) {
+      var jsonData1 = (value.body);
       print('${value.body}');
       if (value.statusCode == 200) {
         var jsonData = jsonDecode(value.body);
@@ -658,7 +805,10 @@ class _ItemsPageState extends State<ItemsPage>
           Toast.show(jsonData['message'], context,
               gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
         }
-      }
+      }else
+        Toast.show('Something went wrong!', context,
+            gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
+
       setState(() {
         isFetch = false;
       });

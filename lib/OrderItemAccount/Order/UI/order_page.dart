@@ -705,7 +705,7 @@ class _OrderPageState extends State<OrderPage>
           }
         }
         Toast.show(jsonData['message'], context,
-            duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
+            duration: Toast.LENGTH_LONG, gravity: Toast.CENTER);
         setState(() {
           isRun = false;
           status = preferences.getInt('duty');
@@ -743,6 +743,7 @@ class _OrderPageState extends State<OrderPage>
             isFetch = false;
           });
         } else {
+          var jsonDat = (value.body);
           var jsonData = jsonDecode(value.body) as List;
           List<TodayOrderDetails> oreder =
               jsonData.map((e) => TodayOrderDetails.fromJson(e)).toList();

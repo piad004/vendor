@@ -29,6 +29,7 @@ import 'package:vendor/parcel/editcharge.dart';
 import 'package:vendor/parcel/orderhistoryparcel.dart';
 import 'package:vendor/parcel/parcelmainpage.dart';
 import 'package:vendor/parcel/parcelorderinfo.dart';
+import 'package:vendor/pharmacy/SearchPharmaItem.dart';
 import 'package:vendor/pharmacy/addaddonpharma.dart';
 import 'package:vendor/pharmacy/additemrestpharma.dart';
 import 'package:vendor/pharmacy/addvarientpharma.dart';
@@ -82,6 +83,7 @@ class PageRoutes {
   static const String invoicepdfrest = 'invoicepdfrest';
   static const String invoicepdfparcel = 'invoicepdfparcel';
   static const String searchItem = 'searchitem';
+  static const String searchPharmaItem = 'searchpharmaitem';
 
 //pharma
   static const String addItemPharma = 'addItemPharma';
@@ -148,6 +150,7 @@ class PageRoutes {
       loginRoot: (context) => PhoneNumber(),
       verification: (context) => VerificationPage(),
       searchItem: (context) => SearchItem(),
+      searchPharmaItem: (context) => SearchPharmaItem(),
     };
   }
 }

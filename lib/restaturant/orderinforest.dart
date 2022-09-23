@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:photo_view/photo_view.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toast/toast.dart';
@@ -41,7 +42,7 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
 
     final Map<String, Object> dataObject =
         ModalRoute.of(context).settings.arguments;
-    if(!isDismiss){
+    if (!isDismiss) {
       setState(() {
         orderDetails = dataObject['orderdetails'];
         curency = dataObject['curency'];
@@ -50,7 +51,9 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
 
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(144.0),
+        preferredSize: Size.fromHeight((orderDetails.order_status.toString().trim().toUpperCase() == 'PENDING')
+            ? 200
+            : 150),
         child: CustomAppBar(
           leading: IconButton(
             icon: Icon(
@@ -69,84 +72,143 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
                 .headline4
                 .copyWith(fontSize: 13.3, letterSpacing: 0.07),
           ),
-          actions: [Padding(
-            padding: EdgeInsets.only(right: 10, top: 10, bottom: 10),
-            child: RaisedButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamed(
-                    PageRoutes.invoicepdfrest,
-                    arguments: {
-                      'inv_details': orderDetails,
-                    })
-                    .then((value) {})
-                    .catchError((e) {});
-              },
-              child: Text(
-                locale.invoiceprint,
-                style: TextStyle(
-                    color: kWhiteColor, fontWeight: FontWeight.w400),
+          actions: [
+            Padding(
+              padding: EdgeInsets.only(right: 10, top: 10, bottom: 10),
+              child: RaisedButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamed(PageRoutes.invoicepdfrest, arguments: {
+                        'inv_details': orderDetails,
+                      })
+                      .then((value) {})
+                      .catchError((e) {});
+                },
+                child: Text(
+                  locale.invoiceprint,
+                  style: TextStyle(
+                      color: kWhiteColor, fontWeight: FontWeight.w400),
+                ),
+                color: kMainColor,
+                highlightColor: kMainColor,
+                focusColor: kMainColor,
+                splashColor: kMainColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
+                ),
               ),
-              color: kMainColor,
-              highlightColor: kMainColor,
-              focusColor: kMainColor,
-              splashColor: kMainColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0),
-              ),
-            ),
-          )],
+            )
+          ],
           bottom: PreferredSize(
             preferredSize: Size.fromHeight(0.0),
-            child: Hero(
-              tag: locale.customer,
-              child: Container(
-                color: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: ListTile(
-                  leading: Image.asset(
-                    'images/user.png',
-                    scale: 2.5,
-                    height: 42.3,
-                    width: 33.7,
-                  ),
-                  title: Text(
-                    '${orderDetails.user_name}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline4
-                        .copyWith(fontSize: 13.3, letterSpacing: 0.07),
-                  ),
-                  subtitle: Text(
-                    '${orderDetails.delivery_date} | ${orderDetails.time_slot}',
-                    style: Theme.of(context)
-                        .textTheme
-                        .headline6
-                        .copyWith(fontSize: 11.7, letterSpacing: 0.06),
-                  ),
-                  trailing: FittedBox(
-                    fit: BoxFit.fill,
-                    child: Row(
-                      children: <Widget>[
-                        IconButton(
-                          icon: Icon(
-                            Icons.phone,
-                            color: kMainColor,
-                            size: 18.0,
-                          ),
-                          onPressed: () {
-                            if (orderDetails.user_number != null &&
-                                orderDetails.user_number.toString().length >
-                                    9) {
-                              _launchURL("tel:${orderDetails.user_number}");
-                            }
-                          },
+            child: Column(children: [
+              Visibility(
+                visible: ((orderDetails.order_status.toString().trim().toUpperCase() == 'PENDING') ||
+                    (orderDetails.order_status.toString().trim().toUpperCase() == 'CANCEL'))
+                    ? true
+                    : false,
+                child:
+                Row(
+                    mainAxisAlignment:
+                    MainAxisAlignment.spaceAround,
+                    children: [
+                      RaisedButton(
+                        onPressed: () {
+                          /* Navigator.of(context)
+                      .pushNamed(
+                      PageRoutes.invoicepdf,
+                      arguments: {
+                        'inv_details': orderDetails,
+                      })
+                      .then((value) {})
+                      .catchError((e) {});*/
+
+                          _showCancelDialog(pr);
+                        },
+                        child: Text(
+                          'Cancel order',
+                          style: TextStyle(
+                              color: kWhiteColor, fontWeight: FontWeight.w400),
                         ),
-                      ],
+                        color: kMainColor,
+                        highlightColor: kMainColor,
+                        focusColor: kMainColor,
+                        splashColor: kMainColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                      RaisedButton(
+                        onPressed: () {
+                          getReviewOrders("Pending",'',pr);
+                        },
+                        child: Text(
+                          "Accept",
+                          style: TextStyle(
+                              color: kWhiteColor, fontWeight: FontWeight.w400),
+                        ),
+                        color: kMainColor,
+                        highlightColor: kMainColor,
+                        focusColor: kMainColor,
+                        splashColor: kMainColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
+                    ]),
+              ),
+              Hero(
+                tag: locale.customer,
+                child: Container(
+                  color: Colors.white,
+                  padding: EdgeInsets.symmetric(vertical: 12.0),
+                  child: ListTile(
+                    leading: Image.asset(
+                      'images/user.png',
+                      scale: 2.5,
+                      height: 42.3,
+                      width: 33.7,
+                    ),
+                    title: Text(
+                      '${orderDetails.user_name}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline4
+                          .copyWith(fontSize: 13.3, letterSpacing: 0.07),
+                    ),
+                    subtitle: Text(
+                      '${orderDetails.delivery_date} | ${orderDetails.time_slot}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline6
+                          .copyWith(fontSize: 11.7, letterSpacing: 0.06),
+                    ),
+                    trailing: FittedBox(
+                      fit: BoxFit.fill,
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                            icon: Icon(
+                              Icons.phone,
+                              color: kMainColor,
+                              size: 18.0,
+                            ),
+                            onPressed: () {
+                              if (orderDetails.user_number != null &&
+                                  orderDetails.user_number.toString().length >
+                                      9) {
+                                //_launchURL("tel:${orderDetails.user_number}");
+                                _launchURL("${orderDetails.user_number}");
+                              }
+                            },
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
+            ],
             ),
           ),
         ),
@@ -405,6 +467,44 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
               SizedBox(
                 height: 7.0,
               ),
+              Visibility(
+                  visible: (orderDetails.prescription != null &&
+                          orderDetails.prescription != '')
+                      ? true
+                      : false,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        Divider(
+                          color: kCardBackgroundColor,
+                          thickness: 1.0,
+                        ),
+                        Text('Prescription'),
+                        SizedBox(
+                          height: 5.0,
+                        ),
+                        Container(height: 380,
+                        child:  PhotoView(
+                          imageProvider: NetworkImage(orderDetails.prescription!=null?imageBaseUrl + orderDetails.prescription:''),
+                        ),),
+
+                       /* InteractiveViewer(
+                          panEnabled: true, // Set it to false
+                          boundaryMargin: EdgeInsets.all(2),
+                          minScale: 0.5,
+                          maxScale: 2,
+                          child: Image.network(
+                            imageBaseUrl + orderDetails.prescription,
+                            height: 380,
+                            fit: BoxFit.fitWidth,
+                          ),
+                        ),*/
+                      /*  Image.network(imageBaseUrl + orderDetails.prescription,
+                        height: 380,),*/
+                        SizedBox(
+                          height: 7.0,
+                        ),
+                      ])),
               Container(
                 height: 180.0,
                 color: kCardBackgroundColor,
@@ -446,7 +546,8 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
                         if (orderDetails.delivery_boy_num != null &&
                             orderDetails.delivery_boy_num.toString().length >
                                 9) {
-                          _launchURL("tel:${orderDetails.delivery_boy_num}");
+                          //_launchURL("tel:${orderDetails.delivery_boy_num}");
+                          _launchURL("${orderDetails.delivery_boy_num}");
                         }
                       },
                     ),
@@ -457,10 +558,13 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
                         '${orderDetails.delivery_boy_name != null ? orderDetails.delivery_boy_name : 'Not Assigned Yet'}',
                     onTap: () {
                       print('${orderDetails.order_status}');
-                      if ('${orderDetails.order_status}'.toUpperCase() == "PENDING") {
-                        hitFindDriver(context, pr,locale);
+                      if ('${orderDetails.order_status}'.toUpperCase() ==
+                          "PENDING") {
+                        hitFindDriver(context, pr, locale);
                       } else {
-                        Toast.show('Already assign to ${orderDetails.delivery_boy_name}', context,
+                        Toast.show(
+                            'Already assign to ${orderDetails.delivery_boy_name}',
+                            context,
                             duration: Toast.LENGTH_SHORT);
                       }
                       // Navigator.pop(context);
@@ -540,6 +644,94 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
         });
   }
 
+
+  Future<void> _showCancelDialog(pr) async {
+    var reason="";
+    var isVisible=true;
+
+    return showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Dialog(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20.0)), //this right here
+            child: Container(
+              height: 300,
+              child: Padding(
+                padding: const EdgeInsets.only(left:12.0,right: 12,bottom: 12),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Order Cancel',style: TextStyle(color: Colors.green,fontSize: 18,
+                      fontWeight: FontWeight.bold, ),),
+                    /*SizedBox(
+                  height: 10,
+                ),*/
+                    TextFormField(
+                      minLines: 4,
+                      maxLines: 4,
+                      decoration: InputDecoration(
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        // hintText: 'Review',
+                        focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            borderSide: BorderSide(color: Colors.blue)),
+                        filled: true,
+                        contentPadding:
+                        EdgeInsets.only(bottom: 10.0, left: 10.0, right: 10.0),
+                        labelText: 'Reason',
+                      ),
+                      initialValue: reason,
+                      //validator: widget.ongoingOrders,
+                      onChanged: (String newValue) {
+                        reason=newValue;
+                      },
+                    ),
+                    /* SizedBox(
+                      height: 10,
+                    ),*/
+
+                    Container(color: kMainColor,
+                      width: MediaQuery.of(context).size.width-80,
+                      height: 1,),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    /* SizedBox(
+                      height: 10,
+                    ),*/
+                    Visibility(
+                        visible: isVisible,
+                        child: SizedBox(
+                          width: 320.0,
+                          height: 40,
+                          child: RaisedButton(
+                            onPressed: () {
+                              if(reason!="")
+                                getReviewOrders('Cancelled',reason,pr);
+                              else
+                                Toast.show("Empty reason!!", context,
+                                    duration: Toast.LENGTH_SHORT, gravity: Toast.CENTER);
+                            },
+                            child: Text(
+                              "Save",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            color: const Color(0xFF1BC0C5),
+                          ),
+                        )
+                    )
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
   showProgressDialog(String text, ProgressDialog pr) {
     pr.style(
         message: '${text}',
@@ -557,7 +749,8 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
             color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600));
   }
 
-  void hitFindDriver(context, ProgressDialog pr, AppLocalizations locale) async {
+  void hitFindDriver(
+      context, ProgressDialog pr, AppLocalizations locale) async {
     showProgressDialog('Please wait finding delivery boy', pr);
     pr.show();
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -602,7 +795,7 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
       if (value.statusCode == 200) {
         var jsonData = jsonDecode(value.body);
         if (jsonData['status'] == "1") {
-          if(!isDismiss){
+          if (!isDismiss) {
             setState(() {
               orderDetails.delivery_boy_name = delivery_boy_name;
               orderDetails.delivery_boy_num = delivery_phone;
@@ -620,11 +813,52 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
     });
   }
 
+
+  void getReviewOrders(type,review,ProgressDialog pr) {
+    pr.show();
+    var client = http.Client();
+    var assignUrl = orderCancel;
+    client.post(assignUrl, body: {
+      //'delivery_boy_id': '${dBoyId}',
+      'cart_id': '${orderDetails.cart_id}',
+      'cause': '${review}',
+      'type': '${type}'
+    }).then((value) {
+      pr.hide();
+      print(value.body);
+      var jsonData = jsonDecode(value.body);
+      if (value.statusCode == 200) {
+        var jsonData = jsonDecode(value.body);
+        Toast.show(jsonData['message'], context,
+            duration: Toast.LENGTH_LONG, gravity: Toast.BOTTOM);
+        if (jsonData['status'] == "1") {
+          Navigator.of(context).pop();
+        }
+        if (type=='Cancelled') {
+          Navigator.of(context).pop();
+        }
+      }else{
+        Toast.show('Something went wrong!', context,
+            duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+      }
+    }).catchError((e) {
+      print(e);
+      pr.hide();
+      Toast.show('Server error!', context,
+          duration: Toast.LENGTH_SHORT, gravity: Toast.BOTTOM);
+    });
+  }
+
   _launchURL(url) async {
-    if (await canLaunch(url)) {
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: url,
+    );
+    await launch(launchUri.toString());
+    /*if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
-    }
+    }*/
   }
 }

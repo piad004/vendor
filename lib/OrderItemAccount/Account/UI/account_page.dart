@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,23 +14,27 @@ import 'package:vendor/Locale/locales.dart';
 import 'package:vendor/Routes/routes.dart';
 import 'package:vendor/Themes/colors.dart';
 import 'package:vendor/baseurl/baseurl.dart';
+import 'package:vendor/service/firebase.service.dart';
+import 'package:vendor/service/general_app.service.dart';
+import 'package:vendor/service/notification.service.dart';
 
-FirebaseMessaging messaging = FirebaseMessaging.instance;
+/*FirebaseMessaging messaging = FirebaseMessaging.instance;
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 FlutterLocalNotificationsPlugin();
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  '1232', // id
-  'High Importance Notifications', // title
-  'This channel is used for important notifications.', // description
-  importance: Importance.high,
-  playSound: true,
+  'venchannel_id',
+  'Name',
+  'Description',
+ importance: Importance.max,
+ playSound: true,
   sound: RawResourceAndroidNotificationSound('alert'),
+  enableVibration: true,
 );
 
 Future<void> myBackgroundMessageHandler(RemoteMessage message) async {
- /* _showNotification(flutterLocalNotificationsPlugin,
-      '${message.notification.title}', '${message.notification.body}');*/
-}
+ *//* _showNotification(flutterLocalNotificationsPlugin,
+      '${message.notification.title}', '${message.notification.body}');*//*
+}*/
 
 class AccountPage extends StatelessWidget {
   @override
@@ -62,14 +67,40 @@ class _AccountState extends State<Account> {
   String _date = "Not set";
   String _time = "Not set";
 
+  static const platform = MethodChannel('notifications.manage');
+
   @override
   void initState() {
-    getStoreDetails();
     super.initState();
-    setFirebase();
+    getStoreDetails();
+    //setFirebase();
+    initialFirebase();
+    getChannelId();
   }
 
-  void setFirebase() async {
+  void initialFirebase() async{
+    //setting up firebase notifications
+    await Firebase.initializeApp();
+    await NotificationService.clearIrrelevantNotificationChannels();
+    await NotificationService.initializeAwesomeNotification();
+    await NotificationService.listenToActions();
+    await FirebaseService().setUpFirebaseMessaging();
+    FirebaseMessaging.onBackgroundMessage(
+        GeneralAppService.onBackgroundMessageHandler);
+  }
+
+  void getChannelId() async{
+    try {
+      // get channels
+      final List<dynamic> notificationChannels =
+          await platform.invokeMethod('getChannels');
+      var channelList=notificationChannels.length;
+    }catch(e){
+      var error = e.toString();
+    }
+  }
+
+  /*void setFirebase() async {
     try{
       await Firebase.initializeApp();
     }catch(e){
@@ -97,6 +128,19 @@ class _AccountState extends State<Account> {
       }
     });
 
+   // ========================
+    await flutterLocalNotificationsPlugin
+        .resolvePlatformSpecificImplementation<
+    AndroidFlutterLocalNotificationsPlugin>()
+        ?.createNotificationChannel(channel);
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+    );
+    //==============================
+
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification notification = message.notification;
       AndroidNotification android = message.notification?.android;
@@ -122,11 +166,11 @@ class _AccountState extends State<Account> {
 
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       print('A new onMessageOpenedApp event was published!');
-     /* _showNotification(flutterLocalNotificationsPlugin,
-          '${message.notification.title}', '${message.notification.body}');*/
+     *//* _showNotification(flutterLocalNotificationsPlugin,
+          '${message.notification.title}', '${message.notification.body}');*//*
     });
     FirebaseMessaging.onBackgroundMessage(myBackgroundMessageHandler);
-  }
+  }*/
 
   void getStoreDetails() async {
     SharedPreferences pref = await SharedPreferences.getInstance();
@@ -141,7 +185,7 @@ class _AccountState extends State<Account> {
     });
   }
 
-  Future onDidReceiveLocalNotification(
+ /* Future onDidReceiveLocalNotification(
       int id, String title, String body, String payload) async {
     // var message = jsonDecode('${payload}');
     //_showNotification(flutterLocalNotificationsPlugin, '${title}', '${body}');
@@ -162,7 +206,7 @@ class _AccountState extends State<Account> {
     // firebaseMessaging.onIosSettingsRegistered.listen((event) {
     //   print('${event.provisional}');
     // });
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -362,6 +406,7 @@ class StoreDetailsState extends State<StoreDetails> {
 }
 
 
+/*
 Future<void> _showNotification(
     FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin,
     dynamic title,
@@ -372,15 +417,15 @@ Future<void> _showNotification(
   vibrationPattern[2] = 5000;
   vibrationPattern[3] = 2000;
   final AndroidNotificationDetails androidPlatformChannelSpecifics =
-  AndroidNotificationDetails('7458', 'Notify', 'Notify On Shopping',
-      vibrationPattern: vibrationPattern,
+  AndroidNotificationDetails('ven_android_high',"channel.name","channel.description",
       importance: Importance.max,
       priority: Priority.high,
       enableLights: true,
-      enableVibration: true,
       playSound: true,
       sound: RawResourceAndroidNotificationSound('alert'),
-      ticker: 'ticker');
+      enableVibration: true,
+      vibrationPattern: vibrationPattern,
+  );
   final IOSNotificationDetails iOSPlatformChannelSpecifics =
   IOSNotificationDetails(presentSound: true);
   final NotificationDetails platformChannelSpecifics = NotificationDetails(
@@ -390,4 +435,4 @@ Future<void> _showNotification(
   await flutterLocalNotificationsPlugin.show(
       0, '${title}', '${body}', platformChannelSpecifics,
       payload: 'item x');
-}
+}*/

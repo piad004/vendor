@@ -20,7 +20,7 @@ class OrderPagePharma extends StatefulWidget {
 }
 
 class _OrderPagePharmaState extends State<OrderPagePharma>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin,WidgetsBindingObserver {
   List<Tab> tabs = <Tab>[
     Tab(text: 'NEW ORDERS'),
     Tab(text: 'NEXTDAY ORDERS'),
@@ -40,8 +40,9 @@ class _OrderPagePharmaState extends State<OrderPagePharma>
 
   @override
   void initState() {
-    getSharedPref();
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    getSharedPref();
     hitStatusServiced();
     getTodayOrders(pharmacy_today_order);
     tabController = TabController(length: tabs.length, vsync: this);
@@ -64,6 +65,21 @@ class _OrderPagePharmaState extends State<OrderPagePharma>
         }
       }
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(final AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      setState(() {
+        getTodayOrders(pharmacy_today_order);
+      });
+    }
   }
 
   void hitStatusServiced() async {
@@ -696,6 +712,7 @@ class _OrderPagePharmaState extends State<OrderPagePharma>
     var client = http.Client();
     var todayOrderUrl = Uri.parse('$uriOrder');
     client.post(todayOrderUrl, body: {'vendor_id': '${vendorId}'}).then((value) {
+      var body = value.body.toString();
       if (value.statusCode == 200) {
         if (value.body
             .toString()

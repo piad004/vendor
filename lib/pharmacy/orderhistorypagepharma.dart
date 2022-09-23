@@ -84,7 +84,8 @@ class InsightStatePharma extends State<InsightPharma> {
                               ),
                               TextSpan(
                                 text:
-                                    '${orederList[index].delivery_date} | ${orederList[index].time_slot}',
+                                    '${orederList[index].delivery_date}',
+                                    //'${orederList[index].delivery_date} | ${orederList[index].time_slot}',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline6

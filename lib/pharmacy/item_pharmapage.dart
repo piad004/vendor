@@ -32,6 +32,8 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
   var value = 0;
   dynamic isFetch = false;
   dynamic isDelete = false;
+  bool isSearchOpen = false;
+  TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
@@ -84,6 +86,8 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
   void productListM(catid) async {
     SharedPreferences pref = await SharedPreferences.getInstance();
     setState(() {
+      isSearchOpen = false;
+      searchController.clear();
       isFetch = true;
       curency = pref.getString('curency');
       productList.clear();
@@ -92,6 +96,45 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
     var client = http.Client();
     var storeProduct = pharmacy_product;
     client.post(storeProduct, body: {
+      'vendor_id': '${vendorId}',
+      'subcat_id': '${catid}'
+    }).then((value) {
+      if (value.statusCode == 200) {
+        if (value.body.toString() ==
+            "[{\"order_details\":\"no orders found\"}]") {
+        } else {
+          var jsonData = jsonDecode(value.body) as List;
+          List<RestProductArray> listBean =
+              jsonData.map((e) => RestProductArray.fromJson(e)).toList();
+          if (listBean.length > 0) {
+            setState(() {
+              productList = List.from(listBean);
+            });
+          }
+        }
+      }
+      setState(() {
+        isFetch = false;
+      });
+    }).catchError((e) {
+      setState(() {
+        isFetch = false;
+      });
+    });
+  }
+
+  void productSearch(catid, keyword) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    setState(() {
+      isFetch = true;
+      curency = pref.getString('curency');
+      productList.clear();
+    });
+    var vendorId = pref.getInt('vendor_id');
+    var client = http.Client();
+    var storeProduct = pharmacy_product_search;
+    client.post(storeProduct, body: {
+      'keyword': '${keyword}',
       'vendor_id': '${vendorId}',
       'subcat_id': '${catid}'
     }).then((value) {
@@ -131,23 +174,103 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
             titleWidget: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Visibility(
+                    visible: isSearchOpen,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 27,
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 52,
+                          padding: EdgeInsets.only(left: 5),
+                          decoration: BoxDecoration(
+                            color: scaffoldBgColor,
+                            // borderRadius: BorderRadius.circular(50)
+                          ),
+                          child: TextFormField(
+                            controller: searchController,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              prefixIcon: Icon(
+                                Icons.search,
+                                color: kHintColor,
+                              ),
+                              hintText: 'Search product...',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    isSearchOpen = false;
+                                    searchController.clear();
+                                  });
+                                  /* Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        //builder: (context) => SearchPage('["shop"]',categoryLists[0].vendor_id)))
+                                          builder: (context) => SearchPage('["all"]',uiType,vendorCategoryId,vendor_id.toString(),'')))
+                                      .then((value) {
+                                    getCartCount();
+                                  });*/
+                                },
+                                icon: Icon(
+                                  Icons.close,
+                                  color: kHintColor,
+                                ),
+                              ),
+                            ),
+                            cursorColor: kMainColor,
+                            autofocus: false,
+                            onChanged: (value) {
+                              productSearch(
+                                  subCatList[tabController.index]
+                                      .resturant_cat_id,
+                                  value);
+                              setState(() {
+                                /* categoryLists = categoryListsSearch
+                                    .where((element) => element.category_name
+                                    .toString()
+                                    .toLowerCase()
+                                    .contains(value.toLowerCase()))
+                                    .toList();*/
+                              });
+                            },
+                          ),
+                        )
+                      ],
+                    )),
                 Center(
                     child: Text(
-                      locale.myproduct,
+                  locale.myproduct,
                   style: TextStyle(color: kMainTextColor),
                 )),
               ],
             ),
             actions: <Widget>[
-              IconButton(
-                  icon: Icon(
-                    Icons.refresh,
-                    color: kMainColor,
-                  ),
-                  onPressed: () {
-                    productListM(
-                        subCatList[tabController.index].resturant_cat_id);
-                  }),
+              Visibility(
+                  visible: (isSearchOpen) ? false : true,
+                  child: Row(children: [
+                    IconButton(
+                        icon: Icon(
+                          Icons.search,
+                          color: kMainColor,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            isSearchOpen = true;
+                            searchController.clear();
+                          });
+                        }),
+                    IconButton(
+                        icon: Icon(
+                          Icons.refresh,
+                          color: kMainColor,
+                        ),
+                        onPressed: () {
+                          productListM(
+                              subCatList[tabController.index].resturant_cat_id);
+                        }),
+                  ]))
             ],
             bottom: TabBar(
               controller: tabController,
@@ -172,7 +295,7 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                             children: [
                               GestureDetector(
                                 onTap: () {
-                                  if (productList[index].varient_details !=
+                                  /*if (productList[index].varient_details !=
                                           null &&
                                       productList[index]
                                               .varient_details
@@ -192,12 +315,10 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                               .resturant_cat_id);
                                     });
                                   } else {
-                                    Toast.show(
-                                        locale.novarproduct,
-                                        context,
+                                    Toast.show(locale.novarproduct, context,
                                         duration: Toast.LENGTH_SHORT,
                                         gravity: Toast.CENTER);
-                                  }
+                                  }*/
                                 },
                                 behavior: HitTestBehavior.opaque,
                                 child: Stack(
@@ -206,6 +327,30 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                       mainAxisAlignment:
                                           MainAxisAlignment.start,
                                       children: <Widget>[
+                                        GestureDetector(
+                                          onTap:(){
+                                            Navigator.pushNamed(context,
+                                                PageRoutes.updateitempharma,
+                                                arguments: {
+                                                  'productId':
+                                                  productList[index].product_id,
+                                                  'description': productList[index]
+                                                      .description,
+                                                  'product_name': productList[index]
+                                                      .product_name,
+                                                  'product_image':
+                                                  productList[index]
+                                                      .product_image,
+                                                  'subcat_id': subCatList[
+                                                  tabController.index]
+                                                      .resturant_cat_id,
+                                                  'currency': curency
+                                                }).then((value) {
+                                              productListM(
+                                                  subCatList[tabController.index]
+                                                      .resturant_cat_id);
+                                            });
+                                        },child:
                                         Padding(
                                           padding: EdgeInsets.only(
                                               left: 20.0,
@@ -225,7 +370,7 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                                   height: 93.3,
                                                   width: 93.3,
                                                 ),
-                                        ),
+                                        ),),
                                         Expanded(
                                           child: Row(
                                             children: [
@@ -239,8 +384,18 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                                       padding: EdgeInsets.only(
                                                           right: 20),
                                                       child: Text(
-                                                          productList[index]
-                                                              .product_name,
+                                                          (productList !=
+                                                                      null &&
+                                                                  productList
+                                                                          .length >
+                                                                      0 &&
+                                                                  productList[index]
+                                                                          .product_name !=
+                                                                      null)
+                                                              ? productList[
+                                                                      index]
+                                                                  .product_name
+                                                              : '',
                                                           style:
                                                               bottomNavigationTextStyle
                                                                   .copyWith(
@@ -265,13 +420,12 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                                 onTap: () {
                                                   showAlertDialog(
                                                       context,
-                                                      (productList[index]
-                                                                      .varient_details !=
-                                                                  null &&
+                                                      (productList[index].varient_details != null &&
+                                                          productList[index].varient_details.isNotEmpty &&
                                                               productList[index]
                                                                       .varient_details
                                                                       .length >
-                                                                  0)
+                                                                  1)
                                                           ? productList[index]
                                                               .varient_details[
                                                                   productList[
@@ -281,12 +435,12 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                                           : productList[index]
                                                               .product_id,
                                                       (productList[index]
-                                                                      .varient_details !=
-                                                                  null &&
+                                                                      .varient_details != null &&
+                                                          productList[index].varient_details.isNotEmpty &&
                                                               productList[index]
                                                                       .varient_details
                                                                       .length >
-                                                                  0)
+                                                                  1)
                                                           ? true
                                                           : false);
                                                 },
@@ -376,7 +530,7 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    GestureDetector(
+                                    /*GestureDetector(
                                       onTap: () {
                                         Navigator.pushNamed(context,
                                             PageRoutes.addVaraintItemPharma,
@@ -444,30 +598,113 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                               color: kWhiteColor),
                                         ),
                                       ),
-                                    ),
+                                    ),*/
+
                                     GestureDetector(
                                       onTap: () {
-                                        Navigator.pushNamed(context,
-                                            PageRoutes.updateitempharma,
+                                        hitStockChange(
+                                            context,
+                                            productList[index]
+                                                .varient_details[
+                                            productList[index]
+                                                .selectedItem]
+                                                .variant_id,
+                                            (productList[index]
+                                                .varient_details !=
+                                                null &&
+                                                productList[index]
+                                                    .varient_details
+                                                    .length >
+                                                    0 &&
+                                                (productList[index]
+                                                    .varient_details[
+                                                productList[
+                                                index]
+                                                    .selectedItem]
+                                                    .stock !=
+                                                    null) &&
+                                                (productList[index]
+                                                    .varient_details[
+                                                productList[
+                                                index]
+                                                    .selectedItem]
+                                                    .stock.toString() !=
+                                                    '0'))
+                                                ? 'outstock'
+                                                : 'instock');
+                                        /*Navigator.pushNamed(context,
+                                            PageRoutes.addItemaddonpharma,
                                             arguments: {
                                               'productId':
                                                   productList[index].product_id,
-                                              'description': productList[index]
-                                                  .description,
-                                              'product_name': productList[index]
-                                                  .product_name,
-                                              'product_image':
-                                                  productList[index]
-                                                      .product_image,
-                                              'subcat_id': subCatList[
-                                                      tabController.index]
-                                                  .resturant_cat_id,
-                                              'currency': curency
+                                              'currency': curency,
+                                              'vendor_id':
+                                                  productList[index].vendor_id
                                             }).then((value) {
                                           productListM(
                                               subCatList[tabController.index]
                                                   .resturant_cat_id);
-                                        });
+                                        });*/
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10.0, vertical: 10),
+                                        margin: EdgeInsets.only(
+                                            left: 5.0, right: 10),
+                                        decoration: BoxDecoration(
+                                            color: kMainColor,
+                                            borderRadius: BorderRadius.all(
+                                                Radius.circular(50))),
+                                        child: Text(
+                                          (productList[index].varient_details !=null &&
+                                              productList[index].varient_details.isNotEmpty &&
+                                              productList[index]
+                                                          .varient_details[
+                                                              productList[index]
+                                                                  .selectedItem]
+                                                          .stock !=
+                                                      null &&
+                                                  productList[index]
+                                                          .varient_details[
+                                                              productList[index]
+                                                                  .selectedItem]
+                                                          .stock
+                                                          .toString() !=
+                                                      '0')
+                                              ? 'Out of stock'
+                                              : 'In stock',
+                                          style: TextStyle(
+                                              fontSize: 10.0,
+                                              color: kWhiteColor),
+                                        ),
+                                      ),
+                                    ),
+                                    GestureDetector(
+                                      onTap: () {
+                                        if (productList[index].varient_details !=
+                                            null &&
+                                            productList[index]
+                                                .varient_details
+                                                .length >
+                                                0) {
+                                          Navigator.pushNamed(
+                                              context, PageRoutes.editItemPharma,
+                                              arguments: {
+                                                'selectedItem': productList[index],
+                                                'currency': curency,
+                                                'catid':
+                                                subCatList[tabController.index]
+                                                    .resturant_cat_id,
+                                              }).then((value) {
+                                            productListM(
+                                                subCatList[tabController.index]
+                                                    .resturant_cat_id);
+                                          });
+                                        } else {
+                                          Toast.show(locale.novarproduct, context,
+                                              duration: Toast.LENGTH_SHORT,
+                                              gravity: Toast.CENTER);
+                                        }
                                       },
                                       child: Container(
                                         padding: EdgeInsets.symmetric(
@@ -563,7 +800,8 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
                                                           context,
                                                           productList[index]
                                                               .addons[indi]
-                                                              .addon_id,locale);
+                                                              .addon_id,
+                                                          locale);
                                                     },
                                                     child: Icon(
                                                       Icons.delete,
@@ -668,7 +906,8 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
           onPressed: () =>
               Navigator.pushNamed(context, PageRoutes.addItemPharma)
                   .then((value) {
-            productListM(subCatList[tabController.index].resturant_cat_id);
+            getSubCategory();
+            // productListM(subCatList[tabController.index].resturant_cat_id);
           }),
           tooltip: locale.addproduct,
           child: Icon(
@@ -681,7 +920,8 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
     );
   }
 
-  void hitDeleteButton(BuildContext context, product_id, isVaraint, AppLocalizations locale) {
+  void hitDeleteButton(
+      BuildContext context, product_id, isVaraint, AppLocalizations locale) {
     setState(() {
       isDelete = true;
     });
@@ -724,7 +964,7 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
     Widget clear = GestureDetector(
       onTap: () {
         Navigator.of(context, rootNavigator: true).pop('dialog');
-        hitDeleteButton(context, product_id, isVaraint,locale);
+        hitDeleteButton(context, product_id, isVaraint, locale);
       },
       child: Material(
         elevation: 2,
@@ -782,13 +1022,15 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
     );
   }
 
-  void hitDeleteButtonAddOn(BuildContext context, addon_id, AppLocalizations locale) {
+  void hitDeleteButtonAddOn(
+      BuildContext context, addon_id, AppLocalizations locale) {
     setState(() {
       isDelete = true;
     });
     var client = http.Client();
     var storeProduct = pharmacy_deleteaddon;
     client.post(storeProduct, body: {'addon_id': '${addon_id}'}).then((value) {
+      var body = (value.body);
       print('${value.body}');
       if (value.statusCode == 200) {
         var jsonData = jsonDecode(value.body);
@@ -814,12 +1056,13 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
     });
   }
 
-  showAlertDialogAddOn(BuildContext context, addon_id, AppLocalizations locale) {
+  showAlertDialogAddOn(
+      BuildContext context, addon_id, AppLocalizations locale) {
     var locale = AppLocalizations.of(context);
     Widget clear = GestureDetector(
       onTap: () {
         Navigator.of(context, rootNavigator: true).pop('dialog');
-        hitDeleteButtonAddOn(context, addon_id,locale);
+        hitDeleteButtonAddOn(context, addon_id, locale);
       },
       child: Material(
         elevation: 2,
@@ -876,5 +1119,45 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
         return alert;
       },
     );
+  }
+
+  void hitStockChange(BuildContext context, varient_id, stockType) {
+    setState(() {
+      isFetch = true;
+    });
+    var client = http.Client();
+    var url = store_stockchange;
+    client.post(url, body: {
+      'varient_id': varient_id.toString(),
+      'type': stockType,
+      'ui_type': '3'
+    }).then((value) {
+      print('${value.body}');
+      var jsonDat = (value.body);
+      if (value.statusCode == 200) {
+        var jsonData = jsonDecode(value.body);
+        if (jsonData['status'] == "1") {
+          Toast.show(jsonData['message'], context,
+              gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
+          productListM(subCatList[tabController.index].resturant_cat_id);
+        } else {
+          Toast.show(jsonData['message'], context,
+              gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
+        }
+      } else
+        Toast.show('Something went wrong!', context,
+            gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
+
+      setState(() {
+        isFetch = false;
+      });
+    }).catchError((e) {
+      Toast.show('Something went wrong!', context,
+          gravity: Toast.CENTER, duration: Toast.LENGTH_SHORT);
+      setState(() {
+        isFetch = false;
+      });
+      print(e);
+    });
   }
 }

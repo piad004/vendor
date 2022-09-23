@@ -442,13 +442,16 @@ bool isDismiss = false;
                       icon: Icon(
                         Icons.call,
                         color: kMainColor,
-                        size: 17.0,
+                        size: (orderDetails.delivery_boy_num != null &&
+                            orderDetails.delivery_boy_num.toString().length >
+                                9)?17.0:0.0,
                       ),
                       onPressed: () {
                         if (orderDetails.delivery_boy_num != null &&
                             orderDetails.delivery_boy_num.toString().length >
                                 9) {
-                          _launchURL("tel:${orderDetails.delivery_boy_num}");
+                         // _launchURL("tel:+${orderDetails.delivery_boy_num}");
+                          _launchURL("${orderDetails.delivery_boy_num}");
                         }
                       },
                     ),
@@ -712,11 +715,17 @@ bool isDismiss = false;
   }
 
   _launchURL(url) async {
-    if (await canLaunch(url)) {
+
+    final Uri launchUri = Uri(
+      scheme: 'tel',
+      path: url,
+    );
+    await launch(launchUri.toString());
+    /*if (await canLaunch(url)) {
       await launch(url);
     } else {
       throw 'Could not launch $url';
-    }
+    }*/
   }
 
   void getReviewOrders(type,review,ProgressDialog pr) {

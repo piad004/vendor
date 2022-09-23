@@ -24,6 +24,7 @@ class TodayOrderRestaurant{
   dynamic payment_method;
   dynamic payment_status;
   dynamic delivery_boy_num;
+  dynamic prescription;
   List<TodayRestaurantOrderDetails> order_details;
   List<AddonList> addons;
 
@@ -51,6 +52,7 @@ class TodayOrderRestaurant{
       this.payment_method,
       this.payment_status,
       this.delivery_boy_num,
+      this.prescription,
       this.order_details,
       this.addons);
 
@@ -68,12 +70,12 @@ class TodayOrderRestaurant{
       addonList = jaddons.map((e) => AddonList.fromJson(e)).toList();
     }
 
-    return TodayOrderRestaurant(json['area_id'], json['order_id'], json['user_id'], json['delivery_date'], json['user_name'], json['dboy_id'], json['delivery_charge'], json['total_price'], json['total_product_mrp'], json['delivery_boy_name'], json['order_status'], json['cart_id'], json['user_number'], json['address'], json['time_slot'], json['paid_by_wallet'], json['remaining_price'], json['price_without_delivery'], json['coupon_discount'], json['vendor_name'], json['payment_method'], json['payment_status'], json['delivery_boy_num'], orderDetails, addonList);
+    return TodayOrderRestaurant(json['area_id'], json['order_id'], json['user_id'], json['delivery_date'], json['user_name'], json['dboy_id'], json['delivery_charge'], json['total_price'], json['total_product_mrp'], json['delivery_boy_name'], json['order_status'], json['cart_id'], json['user_number'], json['address'], json['time_slot'], json['paid_by_wallet'], json['remaining_price'], json['price_without_delivery'], json['coupon_discount'], json['vendor_name'], json['payment_method'], json['payment_status'], json['delivery_boy_num'],json['prescription'], orderDetails, addonList);
   }
 
   @override
   String toString() {
-    return '{area_id: $area_id, order_id: $order_id, user_id: $user_id, delivery_date: $delivery_date, user_name: $user_name, dboy_id: $dboy_id, delivery_charge: $delivery_charge, total_price: $total_price, total_product_mrp: $total_product_mrp, delivery_boy_name: $delivery_boy_name, order_status: $order_status, cart_id: $cart_id, user_number: $user_number, address: $address, time_slot: $time_slot, paid_by_wallet: $paid_by_wallet, remaining_price: $remaining_price, price_without_delivery: $price_without_delivery, coupon_discount: $coupon_discount, vendor_name: $vendor_name, payment_method: $payment_method, payment_status: $payment_status, delivery_boy_num: $delivery_boy_num, order_details: $order_details, addons: $addons}';
+    return '{area_id: $area_id, order_id: $order_id, user_id: $user_id, delivery_date: $delivery_date, user_name: $user_name, dboy_id: $dboy_id, delivery_charge: $delivery_charge, total_price: $total_price, total_product_mrp: $total_product_mrp, delivery_boy_name: $delivery_boy_name, order_status: $order_status, cart_id: $cart_id, user_number: $user_number, address: $address, time_slot: $time_slot, paid_by_wallet: $paid_by_wallet, remaining_price: $remaining_price, price_without_delivery: $price_without_delivery, coupon_discount: $coupon_discount, vendor_name: $vendor_name, payment_method: $payment_method, payment_status: $payment_status, delivery_boy_num: $delivery_boy_num,prescription: $prescription, order_details: $order_details, addons: $addons}';
   }
 }
 

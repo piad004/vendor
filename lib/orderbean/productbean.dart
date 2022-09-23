@@ -178,9 +178,10 @@ class RestProdVarient {
   dynamic strick_price;
   dynamic price;
   dynamic vendor_id;
+  dynamic stock;
 
   RestProdVarient(this.variant_id, this.product_id, this.quantity, this.unit,
-      this.strick_price, this.price, this.vendor_id);
+      this.strick_price, this.price, this.vendor_id, this.stock);
 
   factory RestProdVarient.fromJson(dynamic json) {
     return RestProdVarient(
@@ -190,12 +191,13 @@ class RestProdVarient {
         json['unit'],
         json['strick_price'],
         json['price'],
-        json['vendor_id']);
+        json['vendor_id'],
+      json['stock'],);
   }
 
   @override
   String toString() {
-    return '{variant_id: $variant_id, product_id: $product_id, quantity: $quantity, unit: $unit, strick_price: $strick_price, price: $price, vendor_id: $vendor_id}';
+    return '{variant_id: $variant_id, product_id: $product_id, quantity: $quantity, unit: $unit, strick_price: $strick_price, price: $price, vendor_id: $vendor_id, stock: $stock}';
   }
 }
 
