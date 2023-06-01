@@ -196,7 +196,7 @@ class UpdatePharmaState extends State<UpdatePharma> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        _showPicker(context,locale);
+                       // _showPicker(context,locale);
                       },
                       behavior: HitTestBehavior.opaque,
                       child: Row(
@@ -210,11 +210,15 @@ class UpdatePharmaState extends State<UpdatePharma> {
                                 ? Image.file(_image)
                                 : (widget.product_image != null)
                                     ? Image.network(
-                                        '${imageBaseUrl}${widget.product_image}')
-                                    : Image.asset('images/user.png'),
+                                        '${imageBaseUrl}${widget.product_image}',
+                              errorBuilder: (context, error, stackTrace) => Image(
+                                image: AssetImage(
+                                    'images/logos/logo_store.png'),
+                              ),)
+                                    : Image.asset('images/logos/logo_store.png'),
                           ),
                           SizedBox(width: 30.0),
-                          Icon(
+                         /* Icon(
                             Icons.camera_alt,
                             color: kMainColor,
                             size: 19.0,
@@ -224,7 +228,7 @@ class UpdatePharmaState extends State<UpdatePharma> {
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  .copyWith(color: kMainColor)),
+                                  .copyWith(color: kMainColor)),*/
                         ],
                       ),
                     ),

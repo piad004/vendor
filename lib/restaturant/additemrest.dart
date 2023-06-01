@@ -310,9 +310,9 @@ class AddRestState extends State<AddRest> {
                         ),
                       ),
                     ),
-                     GestureDetector(
+                    /* GestureDetector(
                       onTap: () {
-                      // _showPicker(context,locale);
+                     //  _showPicker(context,locale);
                       },
                       behavior: HitTestBehavior.opaque,
                       child: Row(
@@ -328,10 +328,15 @@ class AddRestState extends State<AddRest> {
                               imageBaseUrl + product.productImage,
                               //product.productImage,
                               fit: BoxFit.fill,
-                            ):Image.file(_image)
-                                : Image.asset('images/user.png'),
+                      errorBuilder: (context, error, stackTrace) =>
+                          Image(
+                            image: AssetImage(
+                                'images/logos/logo_store.png'),
                           ),
-                         /* SizedBox(width: 30.0),
+                            ):Image.file(_image)
+                                : Image.asset( 'images/logos/logo_store.png'),
+                          ),
+                          SizedBox(width: 30.0),
                           Icon(
                             Icons.camera_alt,
                             color: kMainColor,
@@ -342,10 +347,10 @@ class AddRestState extends State<AddRest> {
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  .copyWith(color: kMainColor)),*/
+                                  .copyWith(color: kMainColor)),
                         ],
                       ),
-                    ),
+                    ),*/
                     SizedBox(
                       height: 25.3,
                     )
@@ -563,8 +568,7 @@ class AddRestState extends State<AddRest> {
   }
   }
 
-/*
-  void newHitService(ProgressDialog pr, BuildContext context, AppLocalizations locale) async {
+  void newHitService1(ProgressDialog pr, BuildContext context, AppLocalizations locale) async {
     print('${subCatString.resturant_cat_id}');
     if (productNameC.text.isNotEmpty &&
         productMrpC.text.isNotEmpty &&
@@ -639,7 +643,6 @@ class AddRestState extends State<AddRest> {
       pr.hide();
     }
   }
-*/
 
 
   Future<void> getProduct() async {

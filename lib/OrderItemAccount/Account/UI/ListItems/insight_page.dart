@@ -99,7 +99,8 @@ class InsightState extends State<Insight> {
                             text: TextSpan(children: [
                               TextSpan(
                                 text:
-                                    '${curency} ${orederList[index].remaining_price}\n\n',
+                                    //'${curency} ${orederList[index].remaining_price}\n\n',
+                                    '${curency} ${orederList[index].price_without_delivery}\n\n',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline4

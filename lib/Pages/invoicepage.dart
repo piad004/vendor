@@ -42,7 +42,11 @@ class MyInvoicePdfState extends State<MyInvoicePdf> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       apCurrency = prefs.getString('curency');
+     /* Runes input = new Runes(' \u{20B9}');
+      print(new String.fromCharCodes(input));
+      apCurrency = new String.fromCharCodes(input);*/
       vendorAddress = prefs.getString('vendor_loc');
+      print('inr :: '+apCurrency.toString());
     });
   }
 
@@ -237,33 +241,33 @@ class MyInvoicePdfState extends State<MyInvoicePdf> {
                         <String>[
                           'Sub Total',
                           '->',
-                          ' $apCurrency. ${invoiceBean.total_price}'
+                          '${apCurrency.toString()} ${(invoiceBean.price_without_delivery)}'
                         ],
-                        <String>[
+                        /*<String>[
                           'Delivery Charge',
                           '->',
-                          ' $apCurrency. ${((invoiceBean.delivery_charge != null || invoiceBean.delivery_charge != 'null') ? double.parse('${invoiceBean.delivery_charge}') : 0.0)}'
+                          ' $apCurrency ${((invoiceBean.delivery_charge != null || invoiceBean.delivery_charge != 'null') ? double.parse('${double.parse(invoiceBean.delivery_charge).toStringAsFixed(2)}') : 0.00)}'
                         ],
                         <String>[
                           'Paid By Wallet',
                           '->',
-                          ' $apCurrency. ${invoiceBean.paid_by_wallet}'
+                          ' $apCurrency ${double.parse(invoiceBean.paid_by_wallet).toStringAsFixed(2)}'
                         ],
                         <String>[
                           'Discount',
                           '->',
-                          ' $apCurrency. ${invoiceBean.coupon_discount}'
+                          ' $apCurrency ${double.parse(invoiceBean.coupon_discount).toStringAsFixed(2)}'
                         ],
                         <String>[
                           'Total',
                           '->',
-                          ' $apCurrency. ${(double.parse('${invoiceBean.total_price}') + ((invoiceBean.delivery_charge != null || invoiceBean.delivery_charge != 'null') ? double.parse('${invoiceBean.delivery_charge}') : 0.0))}'
+                          ' $apCurrency ${(invoiceBean.total_price).toStringAsFixed(2)}'
                         ],
                         <String>[
                           'Remaining Amount',
                           '->',
-                          ' $apCurrency. ${invoiceBean.remaining_price}'
-                        ],
+                          ' $apCurrency. ${double.parse(invoiceBean.remaining_price).toStringAsFixed(2)}'
+                        ],*/
                       ],
                       border: PDF.TableBorder(
                         left: PDF.BorderSide.none,
@@ -280,7 +284,7 @@ class MyInvoicePdfState extends State<MyInvoicePdf> {
                           border: PDF.Border(top: PDF.BorderSide(width: 0))),
                       headerAlignment: PDF.Alignment.centerLeft,
                       cellAlignment: PDF.Alignment.centerLeft,
-                      cellPadding: PDF.EdgeInsets.all(1)),
+                      cellPadding: PDF.EdgeInsets.all(2)),
                 ),
               ]),
               // PDF.Table.fromTextArray(context: cn, data: ),
@@ -352,10 +356,9 @@ class MyInvoicePdfState extends State<MyInvoicePdf> {
         } else if (j == 2) {
           dd.add('${data[i].qty}');
         } else if (j == 3) {
-          dd.add(
-              '${(double.parse('${data[i].price}') / int.parse('${data[i].qty}'))}');
-        } else if (j == 4) {
           dd.add('${data[i].price}');
+        } else if (j == 4) {
+          dd.add('${(double.parse('${data[i].price}') * int.parse('${data[i].qty}')).toStringAsFixed(2)}');
         }
       }
       vdar.add(dd);

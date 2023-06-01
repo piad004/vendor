@@ -153,7 +153,7 @@ class AddVaraintState extends State<AddVaraint> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        _showPicker(context,locale);
+                       // _showPicker(context,locale);
                       },
                       behavior: HitTestBehavior.opaque,
                       child: Row(
@@ -168,7 +168,7 @@ class AddVaraintState extends State<AddVaraint> {
                                 : Image.asset('images/user.png'),
                           ),
                           SizedBox(width: 30.0),
-                          Icon(
+                        /*  Icon(
                             Icons.camera_alt,
                             color: kMainColor,
                             size: 19.0,
@@ -178,7 +178,7 @@ class AddVaraintState extends State<AddVaraint> {
                               style: Theme.of(context)
                                   .textTheme
                                   .caption
-                                  .copyWith(color: kMainColor)),
+                                  .copyWith(color: kMainColor)),*/
                         ],
                       ),
                     ),

@@ -363,6 +363,12 @@ class _ItemsPagePharmaState extends State<ItemsPagePharma>
 //                                scale: 2.5,
                                                   height: 93.3,
                                                   width: 93.3,
+                                            errorBuilder: (context, error, stackTrace) => Image(
+                                              image: AssetImage(
+                                                  'images/logos/logo_store.png'),
+                                              height: 93.3,
+                                              width: 93.3,
+                                            ),
                                                 )
                                               : Image(
                                                   image: AssetImage(

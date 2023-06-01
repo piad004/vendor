@@ -240,7 +240,7 @@ class MyInvoiceRestPdfState extends State<MyInvoiceRestPdf> {
                       '->',
                       ' $apCurrency. ${invoiceBean.price_without_delivery}'
                     ],
-                    <String>[
+                   /* <String>[
                       'Delivery Charge',
                       '->',
                       ' $apCurrency. ${((invoiceBean.delivery_charge!=null || invoiceBean.delivery_charge!='null')?double.parse('${invoiceBean.delivery_charge}'):0.0)}'
@@ -264,7 +264,7 @@ class MyInvoiceRestPdfState extends State<MyInvoiceRestPdf> {
                       'Remaining Amount',
                       '->',
                       ' $apCurrency. ${invoiceBean.remaining_price}'
-                    ],
+                    ],*/
                   ],
                   border: PDF.TableBorder(
                     left: PDF.BorderSide.none,
@@ -353,10 +353,9 @@ class MyInvoiceRestPdfState extends State<MyInvoiceRestPdf> {
         } else if (j == 2) {
           dd.add('${data[i].qty}');
         } else if (j == 3) {
-          dd.add(
-              '${(double.parse('${data[i].price}') / int.parse('${data[i].qty}'))}');
+              dd.add('${data[i].price}');
         } else if (j == 4) {
-          dd.add('${data[i].price}');
+          dd.add('${(double.parse('${data[i].price}') * int.parse('${data[i].qty}')).toStringAsFixed(2)}');
         }
       }
       vdar.add(dd);

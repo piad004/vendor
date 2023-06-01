@@ -214,7 +214,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                 : Image.asset('images/layer_1.png'),
                       ),
                       SizedBox(width: 30.0),
-                      Icon(
+                     /* Icon(
                         Icons.camera_alt,
                         color: kMainColor,
                         size: 19.0,
@@ -230,7 +230,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                 .textTheme
                                 .caption
                                 .copyWith(color: kMainColor)),
-                      ),
+                      ),*/
                     ],
                   ),
                   SizedBox(

@@ -100,7 +100,7 @@ class InsightStatePharma extends State<InsightPharma> {
                             text: TextSpan(children: [
                               TextSpan(
                                 text:
-                                    '${curency} ${orederList[index].remaining_price}\n\n',
+                                    '${curency} ${orederList[index].price_without_delivery}\n\n',
                                 style: Theme.of(context)
                                     .textTheme
                                     .headline4
@@ -190,6 +190,7 @@ class InsightStatePharma extends State<InsightPharma> {
         .post(todayOrderUrl, body: {'vendor_id': '${vendorId}'}).then((value) {
       if (value.statusCode == 200) {
         String orderS = value.body;
+        print("data ::: "+orderS);
         if (value.body
                 .toString()
                 .contains("[{\"order_details\":\"no orders found\"}]") ||

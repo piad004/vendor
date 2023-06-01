@@ -69,18 +69,18 @@ class AddVaraintRestState extends State<AddRestVaraint> {
     super.initState();
   }
 
-  // _imgFromCamera() async {
-  //   final pickedFile = await picker.getImage(source: ImageSource.camera);
-  //
-  //   setState(() {
-  //     if (pickedFile != null) {
-  //       _image = File(pickedFile.path);
-  //     } else {
-  //       print('No image selected.');
-  //     }
-  //   });
-  // }
-  //
+  _imgFromCamera() async {
+    final pickedFile = await picker.getImage(source: ImageSource.camera);
+
+    setState(() {
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
   // _imgFromGallery() async {
   //   picker.getImage(source: ImageSource.gallery).then((pickedFile) {
   //     setState(() {

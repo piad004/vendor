@@ -195,7 +195,7 @@ class AddPharmaState extends State<AddPharma> {
                             color: kCardBackgroundColor,
                             child: _image != null
                                 ? Image.file(_image)
-                                : Image.asset('images/user.png'),
+                                : Image.asset( 'images/logos/logo_store.png'),
                           ),
                           SizedBox(width: 30.0),
                           Icon(

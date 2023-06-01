@@ -27,7 +27,7 @@ apply plugin: 'com.google.gms.google-services'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 32
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -43,11 +43,11 @@ android {
         //applicationId "delfastvendor.primacyinfotech.com"
         applicationId "vendor.delvfast.com"
         minSdkVersion 19
-        targetSdkVersion 30
+        targetSdkVersion 32
         /*versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName*/
-        versionCode 3
-        versionName "1.0.3"
+        versionCode 4
+        versionName "1.0.4"
         multiDexEnabled true
         dexOptions {
             preDexLibraries = false

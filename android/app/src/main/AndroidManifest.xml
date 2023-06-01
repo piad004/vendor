@@ -16,8 +16,8 @@
         android:fullBackupContent="false"
         android:networkSecurityConfig="@xml/netconfig"
         android:usesCleartextTraffic="true"
-        android:roundIcon="@drawable/logo_user"
-        android:icon="@drawable/logo_user"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         tools:ignore="UnusedAttribute">
         <activity
             android:name=".MainActivity"
@@ -67,16 +67,18 @@
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
-            <!--<meta-data
+            <meta-data
                 android:name="com.google.firebase.messaging.default_notification_channel_id"
                 android:value="@string/default_notification_channel_id"/>
 
-        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />
-        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver"
+            android:exported="false"/>
+        <receiver android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
-        </receiver>-->
+        </receiver>
 
     </application>
 </manifest>

@@ -22,7 +22,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   HttpOverrides.global = new MyHttpOverrides();
   try {
-    Firebase.initializeApp();
+   await Firebase.initializeApp();
   } catch (e) {}
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool result = prefs.getBool('islogin');
@@ -386,4 +386,14 @@ class MyHttpClient implements HttpClient {
 
   @override
   Future<HttpClientRequest> putUrl(Uri url) => _realClient.putUrl(url);
+
+  @override
+  set connectionFactory(Future<ConnectionTask<Socket>> Function(Uri url, String proxyHost, int proxyPort) f) {
+    // TODO: implement connectionFactory
+  }
+
+  @override
+  set keyLog(Function(String line) callback) {
+    // TODO: implement keyLog
+  }
 }

@@ -30,6 +30,7 @@ class _OrderPageState extends State<OrderPage>
   List<TodayOrderDetails> orederList = [];
   List<COImageDataBean> orederImageList = [];
 
+  var refreshKey = GlobalKey<RefreshIndicatorState>();
   bool isFetch = true;
   bool isRun = false;
 
@@ -233,7 +234,13 @@ class _OrderPageState extends State<OrderPage>
             ),
           ),
         ),
-        body: TabBarView(
+        body: RefreshIndicator(
+    key: refreshKey,
+    onRefresh: () {
+refreshCall();
+    },
+    child:
+        TabBarView(
           controller: tabController,
           children: tabs.map((Tab tab) {
             if(tab.text == 'CREATE ORDERS'){
@@ -527,7 +534,7 @@ class _OrderPageState extends State<OrderPage>
                                 text: TextSpan(children: [
                                   TextSpan(
                                     text:
-                                    '${curency} ${orederList[index].remaining_price}\n\n',
+                                    '${curency} ${orederList[index].price_without_delivery}\n\n',
                                     style: Theme.of(context)
                                         .textTheme
                                         .headline4
@@ -633,7 +640,17 @@ class _OrderPageState extends State<OrderPage>
           }).toList(),
         ),
       ),
+      ),
     );
+  }
+
+  Future<Null> refreshCall() async {
+    refreshKey.currentState?.show(atTop: false);
+    await Future.delayed(Duration(seconds: 2));
+    //setState(() {
+    getTodayOrders();
+    //});
+    return null;
   }
 
   void hitStatusService() async {

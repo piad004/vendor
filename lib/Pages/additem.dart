@@ -358,8 +358,15 @@ class AddState extends State<Add> {
                                 ? product!=null?Image.network(
                               imageBaseUrl + product.productImage,
                               fit: BoxFit.fill,
+                              errorBuilder: (context, error, stackTrace) =>
+                                  Image(
+                                    image: AssetImage(
+                                        'images/logos/logo_store.png'),
+                                    height: 93.3,
+                                    width: 93.3,
+                                  ),
                             ):Image.file(_image)
-                                : Image.asset('images/user.png'),
+                                : Image.asset('images/logos/logo_store.png'),
                           ),
                          /* SizedBox(width: 30.0),
                           Icon(

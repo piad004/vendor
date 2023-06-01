@@ -255,16 +255,21 @@ class EditState extends State<Edit> {
                             child: _image != null
                                 ? Image.file(_image)
                                 : Image.network(
-                                    '${imageBaseUrl}${productBean.product_image}'),
+                                    '${imageBaseUrl}${productBean.product_image}',
+                            errorBuilder: (context, error, stackTrace) =>
+                                Image(
+                                  image: AssetImage(
+                                      'images/logos/logo_store.png')
+                                ),),
                           ),
                           SizedBox(width: 30.0),
-                          Icon(
+                         /* Icon(
                             Icons.camera_alt,
                             color: kMainColor,
                             size: 0.0,
                           ),
                           SizedBox(width: 14.3),
-                         /* Text(locale.uploadpic,
+                         Text(locale.uploadpic,
                               style: Theme.of(context)
                                   .textTheme
                                   .caption

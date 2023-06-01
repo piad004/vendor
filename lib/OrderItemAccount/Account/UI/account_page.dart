@@ -83,10 +83,10 @@ class _AccountState extends State<Account> {
     await Firebase.initializeApp();
     await NotificationService.clearIrrelevantNotificationChannels();
     await NotificationService.initializeAwesomeNotification();
-    await NotificationService.listenToActions();
+   // await NotificationService.listenToActions();
     await FirebaseService().setUpFirebaseMessaging();
-    FirebaseMessaging.onBackgroundMessage(
-        GeneralAppService.onBackgroundMessageHandler);
+    /*FirebaseMessaging.onBackgroundMessage(
+        GeneralAppService.onBackgroundMessageHandler);*/
   }
 
   void getChannelId() async{

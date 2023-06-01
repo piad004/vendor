@@ -33,7 +33,7 @@ class FirebaseService {
 
     //on notification tap tp bring app back to life
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      saveNewNotification(message);
+     saveNewNotification(message);
       selectNotification("From onMessageOpenedApp");
       //
       //refreshOrdersList(message);
@@ -41,8 +41,8 @@ class FirebaseService {
 
     //normal notification listener
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      saveNewNotification(message);
-      showNotification(message);
+      //saveNewNotification(message);
+      //showNotification(message);
       //
       //refreshOrdersList(message);
     });
@@ -106,7 +106,6 @@ class FirebaseService {
 
       //
       if (imageUrl != null) {
-        //
         AwesomeNotifications().createNotification(
           content: NotificationContent(
             id: Random().nextInt(20),
@@ -124,7 +123,7 @@ class FirebaseService {
         );
       } else {
         //
-        AwesomeNotifications().createNotification(
+      /*  AwesomeNotifications().createNotification(
           content: NotificationContent(
             id: Random().nextInt(20),
             channelKey: NotificationService.appNotificationChannel().channelKey,
@@ -132,10 +131,11 @@ class FirebaseService {
             body: message.data["body"] ?? message.notification.body,
             icon: "resource://drawable/icon",
             customSound: "resource://raw/alert",
-            notificationLayout: NotificationLayout.Default,
+            //notificationLayout: NotificationLayout.Default,
+            notificationLayout: NotificationLayout.BigText,
             payload: Map<String, String>.from(message.data),
           ),
-        );
+        );*/
       }
 
       ///

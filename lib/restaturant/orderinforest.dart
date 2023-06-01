@@ -358,7 +358,7 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
                 color: kCardBackgroundColor,
                 thickness: 1.0,
               ),
-              Container(
+             /* Container(
                 color: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
                 child: Row(
@@ -423,7 +423,7 @@ class _OrderInfoRestState extends State<OrderInfoRest> {
               Divider(
                 color: kCardBackgroundColor,
                 thickness: 1.0,
-              ),
+              ),*/
               Container(
                 color: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),

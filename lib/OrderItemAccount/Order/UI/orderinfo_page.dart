@@ -298,7 +298,7 @@ bool isDismiss = false;
                 color: kCardBackgroundColor,
                 thickness: 1.0,
               ),
-              Container(
+             /* Container(
                 color: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
                 child: Row(
@@ -363,7 +363,7 @@ bool isDismiss = false;
               Divider(
                 color: kCardBackgroundColor,
                 thickness: 1.0,
-              ),
+              ),*/
               Container(
                 color: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
